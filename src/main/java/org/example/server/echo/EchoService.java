@@ -1,12 +1,18 @@
 package org.example.server.echo;
 
+import java.nio.charset.StandardCharsets;
+import org.example.server.chat.dto.AskRequest;
+import org.example.server.chat.dto.AskResponse;
 import org.example.server.echo.dto.EchoRequest;
 import org.example.server.echo.dto.EchoResponse;
 import org.example.server.echo.dto.HealthResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -31,4 +37,5 @@ public class EchoService {
                 .retrieve()
                 .bodyToMono(EchoResponse.class);
     }
+
 }
