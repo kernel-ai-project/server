@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "User")
+@Table(name = "Users")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,7 +29,8 @@ public class User {
     )
     private Long userId;
 
-    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<ChatRoom> chatRooms = new ArrayList<>();
 
     @Column(nullable = false)
@@ -56,7 +57,7 @@ public class User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    @Column(name = "is_deleted")
+    @Column(name = "is_deleted", columnDefinition = "NUMBER(1)")
     private boolean isDeleted;
 
 }

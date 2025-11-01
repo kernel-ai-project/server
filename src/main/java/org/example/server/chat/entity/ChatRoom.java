@@ -29,9 +29,11 @@ public class ChatRoom {
     private Long chatRoomId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "userId")
     private User user;
 
-    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Message> messages = new ArrayList<>();
 
     @Column(nullable = false)
@@ -43,10 +45,10 @@ public class ChatRoom {
     @Column(name = "update_at")
     private LocalDateTime updateAt;
 
-    @Column(name = "is_deleted")
+    @Column(name = "is_deleted", columnDefinition = "NUMBER(1)")
     private Boolean isDeleted;
 
-    @Column(name = "is_favorited", insertable = false)
+    @Column(name = "is_favorited", insertable = false, columnDefinition = "NUMBER(1)")
     private Boolean isFavorited;
 
 }

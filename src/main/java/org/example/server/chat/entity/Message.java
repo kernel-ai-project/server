@@ -27,9 +27,10 @@ public class Message {
     private Long messageId;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "chatRoomId")
     private ChatRoom chatRoom;
 
-    @Column(name = "is_user", nullable = false)
+    @Column(name = "is_user", nullable = false, columnDefinition = "NUMBER(1)")
     private boolean isUser;
 
     @Column(nullable = false)
