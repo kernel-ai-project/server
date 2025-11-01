@@ -20,4 +20,3 @@ spring:
   h2:
     console:
       enabled: ${SPRING_H2_CONSOLE_ENABLED}
-
