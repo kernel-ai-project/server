@@ -33,6 +33,8 @@ public class Message {
     @Column(name = "is_user", nullable = false, columnDefinition = "NUMBER(1)")
     private boolean isUser;
 
+    @Lob
+    @Basic(fetch = FetchType.LAZY)
     @Column(nullable = false)
     private String content;
 
