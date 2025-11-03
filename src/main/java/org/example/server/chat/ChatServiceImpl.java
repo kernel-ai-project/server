@@ -7,6 +7,8 @@ import org.example.server.chat.dto.AskRequest;
 import org.example.server.chat.dto.AskResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.server.chat.dto.ChatRoomResponse;
+import org.example.server.chat.entity.ChatRoom;
+import org.example.server.chat.entity.User;
 import org.example.server.chat.respository.ChatRoomRepository;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -59,6 +61,18 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     public List<ChatRoomResponse> findChatRooms(Long userId) {
+
         return chatRoomRepository.findByUserId(userId);
+    }
+
+    @Override
+    public void deleteChatRoom(Long userId, Long chatRoomId) {
+
+        if (!chatRoomRepository.existsByUser_UserIdAndChatRoomId(userId, chatRoomId)) {
+            throw new IllegalArgumentException("채팅방이 존재하지 않습니다.");
+        } else {
+            chatRoomRepository.deleteById(chatRoomId);
+        }
+
     }
 }
