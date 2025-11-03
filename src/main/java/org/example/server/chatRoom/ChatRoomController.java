@@ -1,9 +1,9 @@
-package org.example.server.chat;
+package org.example.server.chatRoom;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.example.server.chat.dto.ChatRoomResponse;
-import org.example.server.chat.dto.CreateChatRoomRequest;
+import org.example.server.chatRoom.dto.ChatRoomResponse;
+import org.example.server.chatRoom.dto.CreateChatRoomRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

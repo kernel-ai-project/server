@@ -1,4 +1,4 @@
-package org.example.server.chat.repository;
+package org.example.server.chatRoom.repository;
 
 import org.example.server.chat.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;

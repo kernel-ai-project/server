@@ -1,14 +1,17 @@
-package org.example.server.chat;
+package org.example.server.chatRoom;
 
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
-import org.example.server.chat.dto.ChatRoomResponse;
-import org.example.server.chat.dto.CreateChatRoomRequest;
+import org.example.server.chat.ChatService;
+import org.example.server.chat.dto.AskRequest;
+import org.example.server.chat.dto.AskResponse;
+import org.example.server.chatRoom.dto.ChatRoomResponse;
+import org.example.server.chatRoom.dto.CreateChatRoomRequest;
 import org.example.server.chat.entity.ChatRoom;
 import org.example.server.chat.entity.User;
 import org.example.server.chat.exception.UserNotFoundException;
-import org.example.server.chat.repository.ChatRoomRepository;
-import org.example.server.chat.repository.UserRepository;
+import org.example.server.chatRoom.repository.ChatRoomRepository;
+import org.example.server.chatRoom.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -20,21 +23,22 @@ public class ChatRoomService {
     private final ChatRoomRepository chatRoomRepository;
     private final UserRepository userRepository;
     private final AuthenticatedUserProvider authenticatedUserProvider;
-    private final FastApiChatRoomClient fastApiChatRoomClient;
+    private final ChatService chatService;
+
 
     public Mono<ChatRoomResponse> createChatRoom(CreateChatRoomRequest request) {
-        String question = request.query().trim();
+        String question = request.question().trim();
 
-        Mono<User> ownerMono = Mono.fromCallable(() -> {
-                    Long currentUserId = authenticatedUserProvider.getCurrentUserId();
-                    return loadOwner(currentUserId);
-                })
-                .subscribeOn(Schedulers.boundedElastic());
+        Mono<User> ownerMono = authenticatedUserProvider.getCurrentUserId()
+                .flatMap(userId -> Mono.fromCallable(() -> loadOwner(userId))
+                        .subscribeOn(Schedulers.boundedElastic()));
+
+        Mono<AskResponse> answerMono = chatService.ask(new AskRequest(question));
 
         return ownerMono
-                .zipWith(fastApiChatRoomClient.createChatRoom(question))
+                .zipWith(answerMono)
                 .flatMap(tuple -> Mono.fromCallable(() ->
-                                saveChatRoomAndBuildResponse(tuple.getT1(), question, tuple.getT2().query()))
+                                saveChatRoomAndBuildResponse(tuple.getT1(), question, tuple.getT2().answer()))
                         .subscribeOn(Schedulers.boundedElastic()));
     }
 
@@ -51,8 +55,6 @@ public class ChatRoomService {
                 .updateAt(LocalDateTime.now())
                 .isDeleted(Boolean.FALSE)
                 .build();
-
-        owner.getChatRooms().add(chatRoom);
 
         ChatRoom saved = chatRoomRepository.save(chatRoom);
 

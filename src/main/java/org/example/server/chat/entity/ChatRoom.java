@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "ChatRoom")
+@Table(name = "Chat_Room")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor

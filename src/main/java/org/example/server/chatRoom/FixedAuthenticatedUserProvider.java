@@ -1,7 +1,8 @@
-package org.example.server.chat;
+package org.example.server.chatRoom;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import reactor.core.publisher.Mono;
 
 @Component
 public class FixedAuthenticatedUserProvider implements AuthenticatedUserProvider {
@@ -13,7 +14,7 @@ public class FixedAuthenticatedUserProvider implements AuthenticatedUserProvider
     }
 
     @Override
-    public Long getCurrentUserId() {
-        return defaultUserId;
+    public Mono<Long> getCurrentUserId() {
+        return Mono.just(defaultUserId);
     }
 }
