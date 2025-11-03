@@ -14,4 +14,6 @@ public interface ChatService {
     Flux<String> askStream(AskRequest req);
 
     List<ChatRoomResponse> findChatRooms(Long userId);
+
+    void deleteChatRoom(Long userId, Long chatRoomId);
 }

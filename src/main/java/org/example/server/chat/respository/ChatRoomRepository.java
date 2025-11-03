@@ -16,4 +16,6 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
             "FROM ChatRoom cr " +
             "WHERE cr.user.userId = :userId")
     List<ChatRoomResponse> findByUserId(@Param("userId") Long userId);
+
+    boolean existsByUser_UserIdAndChatRoomId(Long userId, Long chatRoomId);
 }

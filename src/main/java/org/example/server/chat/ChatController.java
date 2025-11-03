@@ -4,7 +4,7 @@ import org.example.server.chat.dto.AskRequest;
 import org.example.server.chat.dto.AskResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.server.chat.dto.ChatRoomResponse;
-import org.example.server.chat.entity.ChatRoom;
+import org.example.server.chat.response.ApiResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -35,5 +35,13 @@ public class ChatController {
         List<ChatRoomResponse> chatRooms = chatService.findChatRooms(userId);
 
         return ResponseEntity.ok(chatRooms);
+    }
+
+    @DeleteMapping("/chatRooms/{userId}/{chatRoomId}")
+    public ResponseEntity<ApiResponse> deleteChatRoom(@PathVariable Long userId,
+                                                      @PathVariable Long chatRoomId) {
+        chatService.deleteChatRoom(userId, chatRoomId);
+
+        return ResponseEntity.ok().body(ApiResponse.success("채팅방이 삭제되었습니다."));
     }
 }
