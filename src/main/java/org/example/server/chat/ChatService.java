@@ -2,6 +2,7 @@ package org.example.server.chat;
 
 import org.example.server.chat.dto.AskRequest;
 import org.example.server.chat.dto.AskResponse;
+import org.example.server.chat.dto.ChatRoomDto;
 import org.example.server.chat.dto.ChatRoomResponse;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -16,4 +17,6 @@ public interface ChatService {
     List<ChatRoomResponse> findChatRooms(Long userId);
 
     void deleteChatRoom(Long userId, Long chatRoomId);
+
+    ChatRoomDto updateFavorite(Long userId, Long chatRoomId);
 }

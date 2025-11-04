@@ -6,15 +6,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Table(name = "Message")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Message {
+public class Message extends BaseTimeEntity {
 
     @Id
     @Column(name = "message_id")
@@ -37,8 +35,5 @@ public class Message {
     @Basic(fetch = FetchType.LAZY)
     @Column(nullable = false)
     private String content;
-
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
 
 }
