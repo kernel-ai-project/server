@@ -22,7 +22,7 @@ public class ChatRoomController {
     private final ChatRoomService chatRoomService;
 
     @PostMapping
-    public Mono<ResponseEntity<ChatRoomResponse>> create(@Valid @RequestBody CreateChatRoomRequest request) {
+    public Mono<ResponseEntity<ChatRoomResponse.CreateChatRoomResponse>> create(@Valid @RequestBody CreateChatRoomRequest request) {
         return chatRoomService.createChatRoom(request)
                 .map(ResponseEntity::ok);
     }
@@ -36,11 +36,11 @@ public class ChatRoomController {
     /**
      * 채팅방 조회
      */
-    @GetMapping("/chatRooms")
-    public ResponseEntity<List<ChatRoomResponse>> getChatRooms(@AuthenticationPrincipal CustomOAuth2User user) {
+    @GetMapping
+    public ResponseEntity<List<ChatRoomResponse.GetChatRoomResponse>> getChatRooms(@AuthenticationPrincipal CustomOAuth2User user) {
         Long userId = user.getUserId();
 
-        List<ChatRoomResponse> chatRooms = chatRoomService.findChatRooms(userId);
+        List<ChatRoomResponse.GetChatRoomResponse> chatRooms = chatRoomService.findChatRooms(userId);
 
         return ResponseEntity.ok(chatRooms);
     }
@@ -48,7 +48,7 @@ public class ChatRoomController {
     /**
      * 채팅방 삭제
      */
-    @DeleteMapping("/chatRooms/{chatRoomId}")
+    @DeleteMapping("/{chatRoomId}")
     public ResponseEntity<ApiResponse<Void>> deleteChatRoom(@AuthenticationPrincipal CustomOAuth2User user,
                                                             @PathVariable Long chatRoomId) {
         Long userId = user.getUserId();
@@ -61,7 +61,7 @@ public class ChatRoomController {
     /**
      * 채팅방 즐겨찾기 추가
      */
-    @PatchMapping("/chatRooms/{chatRoomId}/favorite/enable")
+    @PatchMapping("/{chatRoomId}/favorite/enable")
     public ResponseEntity<ApiResponse<ChatRoomDto>> addChatRoomFavorite(@AuthenticationPrincipal CustomOAuth2User user,
                                                                         @PathVariable Long chatRoomId) {
         Long userId = user.getUserId();
@@ -76,7 +76,7 @@ public class ChatRoomController {
     /**
      * 채팅방 즐겨찾기 해제
      */
-    @PatchMapping("/chatRooms/{chatRoomId}/favorite/disable")
+    @PatchMapping("/{chatRoomId}/favorite/disable")
     public ResponseEntity<ApiResponse<ChatRoomDto>> removeChatRoomFavorite(@AuthenticationPrincipal CustomOAuth2User user,
                                                                            @PathVariable Long chatRoomId) {
         Long userId = user.getUserId();

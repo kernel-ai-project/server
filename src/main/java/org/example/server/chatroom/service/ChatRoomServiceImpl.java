@@ -36,7 +36,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final ChatService chatService;
 
     @Override
-    public Mono<ChatRoomResponse> createChatRoom(CreateChatRoomRequest request) {
+    public Mono<ChatRoomResponse.CreateChatRoomResponse> createChatRoom(CreateChatRoomRequest request) {
         String question = request.question().trim();
 
         Mono<User> ownerMono = authenticatedUserProvider.getCurrentUserId()
@@ -57,7 +57,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 .orElseThrow(() -> new UserNotFoundException(userId));
     }
 
-    private ChatRoomResponse saveChatRoomAndBuildResponse(User owner, String question, String answer) {
+    private ChatRoomResponse.CreateChatRoomResponse saveChatRoomAndBuildResponse(User owner, String question, String answer) {
         LocalDateTime now = LocalDateTime.now();
 
         ChatRoom chatRoom = ChatRoom.builder()
@@ -71,7 +71,11 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         ChatRoom saved = chatRoomRepository.save(chatRoom);
         persistInitialMessages(saved, question, answer, now);
 
-        return new ChatRoomResponse(saved.getChatRoomId(), saved.getTitle(), answer);
+        return ChatRoomResponse.CreateChatRoomResponse.builder()
+                .chatRoomId(saved.getChatRoomId())
+                .title(saved.getTitle())
+                .answer(answer)
+                .build();
     }
 
     private void persistInitialMessages(ChatRoom chatRoom, String question, String answer, LocalDateTime createdAt) {
@@ -139,7 +143,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     @Override
     @Transactional
-    public List<ChatRoomResponse> findChatRooms(Long userId) {
+    public List<ChatRoomResponse.GetChatRoomResponse> findChatRooms(Long userId) {
 
         return chatRoomRepository.findByUserId(userId);
     }

@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface ChatRoomService {
 
-    Mono<ChatRoomResponse> createChatRoom(CreateChatRoomRequest request);
+    Mono<ChatRoomResponse.CreateChatRoomResponse> createChatRoom(CreateChatRoomRequest request);
 
     Mono<ChatRoomMessagesResponse> getChatMessages(Long chatRoomId);
 
-    List<ChatRoomResponse> findChatRooms(Long userId);
+    List<ChatRoomResponse.GetChatRoomResponse> findChatRooms(Long userId);
 
     void deleteChatRoom(Long userId, Long chatRoomId);
 
