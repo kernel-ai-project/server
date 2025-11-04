@@ -1,14 +1,12 @@
 package org.example.server.chat.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.security.Signature;
-import java.sql.Date;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class User {
+public class User extends BaseTimeEntity {
 
     @Id
     @Column(name = "user_id")
@@ -32,6 +30,7 @@ public class User {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @JsonIgnore
     private List<ChatRoom> chatRooms = new ArrayList<>();
 
     @Column(nullable = false)
@@ -51,55 +50,7 @@ public class User {
 
     private String gender;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
     @Column(name = "is_deleted", columnDefinition = "NUMBER(1)")
     private boolean isDeleted;
-
-    @Column(name = "role")
-    private String role;
-
-    public void setName(String  name){
-        this.name =name;
-    }
-
-    public void setUsername(String username){
-        this.username = username;
-    }
-
-    public void setEmail(String email){
-        this.email = email;
-    }
-
-    public void setSocialType(String socialType){
-        this.socialType = socialType;
-    }
-
-    public void setGender(String gender){
-        this.gender = gender;
-    }
-
-    public void setRole(String role){
-        this.role = role;
-    }
-    public void setNickname(String nickname){
-        this.nickname = nickname;
-    }
-
-
-     @PrePersist
-    protected void onCreate() {
-        this.createdAt = LocalDateTime.now();
-        this.updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
-    }
 
 }

@@ -1,22 +1,22 @@
 package org.example.server.chat.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "ChatRoom")
+@Table(name = "Chat_Room")
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ChatRoom {
+public class ChatRoom extends BaseTimeEntity {
 
     @Id
     @Column(name = "chat_room_id")
@@ -30,6 +30,7 @@ public class ChatRoom {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId")
+    @JsonIgnore
     private User user;
 
     @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -39,16 +40,17 @@ public class ChatRoom {
     @Column(nullable = false)
     private String title;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @Column(name = "update_at")
-    private LocalDateTime updateAt;
-
     @Column(name = "is_deleted", columnDefinition = "NUMBER(1)")
     private Boolean isDeleted;
 
     @Column(name = "is_favorited", insertable = false, columnDefinition = "NUMBER(1)")
     private Boolean isFavorited;
 
+    public void addFavorite() {
+        if (this.isFavorited) {
+            throw new IllegalStateException("이미 즐겨찾기된 채팅방입니다.");
+        }
+
+        this.isFavorited = true;
+    }
 }

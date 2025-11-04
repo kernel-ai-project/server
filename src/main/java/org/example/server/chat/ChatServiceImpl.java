@@ -3,12 +3,14 @@ package org.example.server.chat;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.example.server.chat.dto.AskRequest;
 import org.example.server.chat.dto.AskResponse;
 import lombok.RequiredArgsConstructor;
+import org.example.server.chat.dto.ChatRoomDto;
 import org.example.server.chat.dto.ChatRoomResponse;
 import org.example.server.chat.entity.ChatRoom;
-import org.example.server.chat.entity.User;
 import org.example.server.chat.respository.ChatRoomRepository;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
@@ -60,18 +62,39 @@ public class ChatServiceImpl implements ChatService {
     }
 
     @Override
+    @Transactional
     public List<ChatRoomResponse> findChatRooms(Long userId) {
 
         return chatRoomRepository.findByUserId(userId);
     }
 
     @Override
+    @Transactional
     public void deleteChatRoom(Long userId, Long chatRoomId) {
 
         if (!chatRoomRepository.existsByUser_UserIdAndChatRoomId(userId, chatRoomId)) {
             throw new IllegalArgumentException("채팅방이 존재하지 않습니다.");
         } else {
             chatRoomRepository.deleteById(chatRoomId);
+        }
+
+    }
+
+    @Override
+    @Transactional
+    public ChatRoomDto updateFavorite(Long userId, Long chatRoomId) {
+
+        ChatRoom chatRoom = chatRoomRepository.findByUserIdAndChatRoomId(userId, chatRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다."));
+        if(!chatRoom.getIsFavorited()){
+            chatRoom.addFavorite();
+
+            return ChatRoomDto.builder()
+                    .chatRoomId(chatRoom.getChatRoomId())
+                    .isFavorited(chatRoom.getIsFavorited())
+                    .build();
+        } else {
+            throw new IllegalStateException("이미 즐겨찾기된 채팅방입니다.");
         }
 
     }
