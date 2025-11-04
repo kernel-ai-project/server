@@ -5,6 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.example.server.chatroom.entity.ChatRoom;
+import org.example.server.common.BaseTimeEntity;
 
 @Entity
 @Table(name = "Message")
