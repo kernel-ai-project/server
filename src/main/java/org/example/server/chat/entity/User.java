@@ -36,8 +36,6 @@ public class User {
     @Column(nullable = false)
     private String name;
 
-    private String birth;
-
     private String nickname;
 
     @Column(nullable = false)
