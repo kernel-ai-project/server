@@ -3,6 +3,7 @@ package org.example.server.chat;
 import org.example.server.chat.dto.AskRequest;
 import org.example.server.chat.dto.AskResponse;
 import lombok.RequiredArgsConstructor;
+import org.example.server.chat.dto.ChatRoomDto;
 import org.example.server.chat.dto.ChatRoomResponse;
 import org.example.server.chat.response.ApiResponse;
 import org.springframework.http.MediaType;
@@ -30,6 +31,11 @@ public class ChatController {
         return chatService.askStream(req);
     }
 
+    /**
+     * 채팅방 조회
+     * @param userId
+     * @return
+     */
     @GetMapping("/chatRooms/{userId}")
     public ResponseEntity<List<ChatRoomResponse>> getChatRooms(@PathVariable Long userId) {
         List<ChatRoomResponse> chatRooms = chatService.findChatRooms(userId);
@@ -37,11 +43,25 @@ public class ChatController {
         return ResponseEntity.ok(chatRooms);
     }
 
+    /**
+     * 체팅방 삭제
+     * @param userId
+     * @param chatRoomId
+     * @return
+     */
     @DeleteMapping("/chatRooms/{userId}/{chatRoomId}")
     public ResponseEntity<ApiResponse> deleteChatRoom(@PathVariable Long userId,
                                                       @PathVariable Long chatRoomId) {
         chatService.deleteChatRoom(userId, chatRoomId);
 
         return ResponseEntity.ok().body(ApiResponse.success("채팅방이 삭제되었습니다."));
+    }
+
+    @PatchMapping("/chatRooms/{userId}/{chatRoomId}/favorite")
+    public ResponseEntity<ApiResponse<ChatRoomDto>> addChatRoomFavorite(@PathVariable Long userId,
+                                                           @PathVariable Long chatRoomId) {
+        ChatRoomDto chatRoom = chatService.updateFavorite(userId, chatRoomId);
+
+        return ResponseEntity.ok().body(ApiResponse.success("성공적으로 즐겨찾기를 완료했습니다.", chatRoom));
     }
 }
