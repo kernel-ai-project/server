@@ -15,7 +15,8 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     @Query("SELECT cr.chatRoomId, cr.title, cr.isFavorited " +
             "FROM ChatRoom cr " +
-            "WHERE cr.user.userId = :userId")
+            "WHERE cr.user.userId = :userId " +
+            "ORDER BY cr.updateAt DESC")
     List<ChatRoomResponse.GetChatRoomResponse> findByUserId(@Param("userId") Long userId);
 
     boolean existsByUser_UserIdAndChatRoomId(Long userId, Long chatRoomId);
@@ -25,5 +26,4 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
             "WHERE cr.user.userId = :userId AND cr.chatRoomId = :chatRoomId")
     Optional<ChatRoom> findByUserIdAndChatRoomId(@Param("userId") Long userId,
                                                 @Param("chatRoomId") Long chatRoomId);
-
 }
