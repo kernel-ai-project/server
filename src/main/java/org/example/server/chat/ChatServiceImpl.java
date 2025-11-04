@@ -82,20 +82,22 @@ public class ChatServiceImpl implements ChatService {
 
     @Override
     @Transactional
-    public ChatRoomDto updateFavorite(Long userId, Long chatRoomId) {
+    public ChatRoomDto updateFavorite(Long userId, Long chatRoomId, boolean isFavorited) {
 
         ChatRoom chatRoom = chatRoomRepository.findByUserIdAndChatRoomId(userId, chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다."));
-        if(!chatRoom.getIsFavorited()){
-            chatRoom.addFavorite();
 
-            return ChatRoomDto.builder()
-                    .chatRoomId(chatRoom.getChatRoomId())
-                    .isFavorited(chatRoom.getIsFavorited())
-                    .build();
+        if (!chatRoom.getIsFavorited() && isFavorited) {
+            chatRoom.addFavorite();
+        } else if (chatRoom.getIsFavorited() && !isFavorited) {
+            chatRoom.removeFavorite();
         } else {
-            throw new IllegalStateException("이미 즐겨찾기된 채팅방입니다.");
+            throw new IllegalStateException("이미 즐겨찾기 상태가 요청하신 상태와 동일합니다.");
         }
 
+        return ChatRoomDto.builder()
+                .chatRoomId(chatRoom.getChatRoomId())
+                .isFavorited(chatRoom.getIsFavorited())
+                .build();
     }
 }

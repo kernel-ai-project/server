@@ -84,7 +84,7 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/", "/oauth2/**", "/login/oauth2/code/**").permitAll()
+                        .requestMatchers("/**", "/oauth2/**", "/login/oauth2/code/**").permitAll()
                         .anyRequest().authenticated());
 
         //세션 설정 : OAuth2 로그인을 위해 IF_REQUIRED로 설정
