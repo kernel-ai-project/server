@@ -2,10 +2,7 @@ package org.example.server.chat.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +10,7 @@ import java.util.List;
 @Entity
 @Table(name = "Users")
 @Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
@@ -48,9 +46,12 @@ public class User extends BaseTimeEntity {
     @Column(name = "social_type")
     private String socialType;
 
+    @Column(name = "gender")
     private String gender;
 
     @Column(name = "is_deleted", columnDefinition = "NUMBER(1)")
     private boolean isDeleted;
 
+    @Column(name = "role")
+    private String role;
 }
