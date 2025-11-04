@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.server.chat.ChatService;
 import org.example.server.chat.dto.AskRequest;
 import org.example.server.chat.dto.AskResponse;
+import org.example.server.chat.respository.ChatRoomRepository;
 import org.example.server.chatRoom.AuthenticatedUserProvider;
 import org.example.server.chatRoom.dto.ChatMessageResponse;
 import org.example.server.chatRoom.dto.ChatRoomMessagesResponse;
@@ -19,7 +20,6 @@ import org.example.server.chat.entity.User;
 import org.example.server.chat.exception.UserNotFoundException;
 import org.example.server.chatRoom.exception.ChatRoomAccessDeniedException;
 import org.example.server.chatRoom.exception.ChatRoomNotFoundException;
-import org.example.server.chatRoom.repository.ChatRoomRepository;
 import org.example.server.chatRoom.repository.MessageRepository;
 import org.example.server.chatRoom.repository.UserRepository;
 import org.springframework.stereotype.Service;
@@ -64,8 +64,8 @@ public class ChatRoomService {
         ChatRoom chatRoom = ChatRoom.builder()
                 .user(owner)
                 .title(question)
-                .createdAt(now)
-                .updateAt(now)
+//                .createdAt(now)
+//                .updateAt(now)
                 .isDeleted(Boolean.FALSE)
                 .build();
 
@@ -80,14 +80,14 @@ public class ChatRoomService {
                 .chatRoom(chatRoom)
                 .isUser(true)
                 .content(question)
-                .createdAt(createdAt)
+//                .createdAt(createdAt)
                 .build();
 
         Message answerMessage = Message.builder()
                 .chatRoom(chatRoom)
                 .isUser(false)
                 .content(answer)
-                .createdAt(LocalDateTime.now())
+//                .createdAt(LocalDateTime.now())
                 .build();
 
         messageRepository.saveAll(List.of(questionMessage, answerMessage));
