@@ -28,4 +28,5 @@ public class EchoController {
     public Mono<EchoResponse> echo(@Validated @RequestBody EchoRequest req) {
         return echoService.echo(req);
     }
+
 }

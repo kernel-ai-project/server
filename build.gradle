@@ -26,7 +26,7 @@ repositories {
 
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-//    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-webflux'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
     implementation 'me.paulschwarz:spring-dotenv:4.0.0'
@@ -35,6 +35,16 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    implementation 'io.jsonwebtoken:jjwt-api:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-impl:0.12.3'
+    implementation 'io.jsonwebtoken:jjwt-jackson:0.12.3'
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+
+    // ✅ OAuth2 Client (DefaultOAuth2UserService 포함)
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+    implementation 'com.oracle.database.jdbc:ojdbc11:23.3.0.23.09'  // 최신 Oracle JDBC 드라이버
 
 }
 
