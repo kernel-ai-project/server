@@ -1,7 +1,6 @@
 package org.example.server.social.dto;
 
 import java.util.Map;
-
 public class NaverResponse implements OAuth2Response{
 
     private final Map<String, Object> attribute;
@@ -34,4 +33,16 @@ public class NaverResponse implements OAuth2Response{
 
         return attribute.get("name").toString();
     }
+
+    @Override
+    public String getGender() {
+        return attribute.get("gender").toString();
+    }
+
+    @Override
+    public String getNickname() {
+        return attribute.get("nickname").toString();
+    }
+
+
 }

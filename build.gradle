@@ -43,6 +43,8 @@ dependencies {
     // ✅ OAuth2 Client (DefaultOAuth2UserService 포함)
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 
+    implementation 'com.oracle.database.jdbc:ojdbc11:23.3.0.23.09'  // 최신 Oracle JDBC 드라이버
+
 }
 
 tasks.named('test') {

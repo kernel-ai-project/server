@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.security.Signature;
 import java.sql.Date;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -36,6 +37,7 @@ public class User {
     @Column(nullable = false)
     private String name;
 
+    @Column(name = "nickname")
     private String nickname;
 
     @Column(nullable = false)
@@ -57,5 +59,47 @@ public class User {
 
     @Column(name = "is_deleted", columnDefinition = "NUMBER(1)")
     private boolean isDeleted;
+
+    @Column(name = "role")
+    private String role;
+
+    public void setName(String  name){
+        this.name =name;
+    }
+
+    public void setUsername(String username){
+        this.username = username;
+    }
+
+    public void setEmail(String email){
+        this.email = email;
+    }
+
+    public void setSocialType(String socialType){
+        this.socialType = socialType;
+    }
+
+    public void setGender(String gender){
+        this.gender = gender;
+    }
+
+    public void setRole(String role){
+        this.role = role;
+    }
+    public void setNickname(String nickname){
+        this.nickname = nickname;
+    }
+
+
+     @PrePersist
+    protected void onCreate() {
+        this.createdAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
+    }
 
 }
