@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.server.chat.dto.ChatRoomDto;
 import org.example.server.chat.dto.ChatRoomResponse;
 import org.example.server.chat.response.ApiResponse;
+import org.example.server.social.dto.CustomOAuth2User;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,34 +34,44 @@ public class ChatController {
 
     /**
      * 채팅방 조회
-     * @param userId
-     * @return
      */
-    @GetMapping("/chatRooms/{userId}")
-    public ResponseEntity<List<ChatRoomResponse>> getChatRooms(@PathVariable Long userId) {
+    @GetMapping("/chatRooms")
+    public ResponseEntity<List<ChatRoomResponse>> getChatRooms(@AuthenticationPrincipal CustomOAuth2User user,
+                                                               @PathVariable Long userId) {
         List<ChatRoomResponse> chatRooms = chatService.findChatRooms(userId);
 
         return ResponseEntity.ok(chatRooms);
     }
 
     /**
-     * 체팅방 삭제
-     * @param userId
-     * @param chatRoomId
-     * @return
+     * 채팅방 삭제
      */
-    @DeleteMapping("/chatRooms/{userId}/{chatRoomId}")
-    public ResponseEntity<ApiResponse> deleteChatRoom(@PathVariable Long userId,
+    @DeleteMapping("/chatRooms/{chatRoomId}")
+    public ResponseEntity<ApiResponse> deleteChatRoom(@AuthenticationPrincipal CustomOAuth2User user,
                                                       @PathVariable Long chatRoomId) {
+        Long userId = user.getUserId();
+
         chatService.deleteChatRoom(userId, chatRoomId);
 
         return ResponseEntity.ok().body(ApiResponse.success("채팅방이 삭제되었습니다."));
     }
 
-    @PatchMapping("/chatRooms/{userId}/{chatRoomId}/favorite")
-    public ResponseEntity<ApiResponse<ChatRoomDto>> addChatRoomFavorite(@PathVariable Long userId,
+    @PatchMapping("/chatRooms/{userId}/{chatRoomId}/favorite/enable")
+    public ResponseEntity<ApiResponse<ChatRoomDto>> addChatRoomFavorite(@AuthenticationPrincipal CustomOAuth2User user,
                                                            @PathVariable Long chatRoomId) {
-        ChatRoomDto chatRoom = chatService.updateFavorite(userId, chatRoomId);
+        Long userId = user.getUserId();
+
+        ChatRoomDto chatRoom = chatService.updateFavorite(userId, chatRoomId, true);
+
+        return ResponseEntity.ok().body(ApiResponse.success("성공적으로 즐겨찾기를 완료했습니다.", chatRoom));
+    }
+
+    @PatchMapping("/chatRooms/{chatRoomId}/favorite/disable")
+    public ResponseEntity<ApiResponse<ChatRoomDto>> removeChatRoomFavorite(@AuthenticationPrincipal CustomOAuth2User user,
+                                                                        @PathVariable Long chatRoomId) {
+        Long userId = user.getUserId();
+
+        ChatRoomDto chatRoom = chatService.updateFavorite(userId, chatRoomId, false);
 
         return ResponseEntity.ok().body(ApiResponse.success("성공적으로 즐겨찾기를 완료했습니다.", chatRoom));
     }
