@@ -1,4 +1,4 @@
-package org.example.server.chat.response;
+package org.example.server.chat.dto;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -18,5 +18,5 @@ public interface ChatService {
 
     void deleteChatRoom(Long userId, Long chatRoomId);
 
-    ChatRoomDto updateFavorite(Long userId, Long chatRoomId);
+    ChatRoomDto updateFavorite(Long userId, Long chatRoomId, boolean isFavorited);
 }
