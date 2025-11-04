@@ -84,8 +84,21 @@ public class SecurityConfig {
         //경로별 인가 작업
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/", "/oauth2/**", "/login/oauth2/code/**").permitAll()
-                        .anyRequest().authenticated());
+                        // 로그인/회원가입, 소셜 로그인 등은 누구나 접근 가능
+                        .requestMatchers(
+                                "/",
+                                "/oauth2/**",
+                                "/login/**",
+                                "/login/oauth2/code/**",
+                                "/api/**"   // JWT 발급용 API (예: /api/auth/login)
+                        ).permitAll()
+
+                        // 그 외 정적 리소스 등도 허용 가능
+                        .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()
+
+                        // 나머지는 인증 필요
+                        .anyRequest().authenticated()
+                );
 
         //세션 설정 : OAuth2 로그인을 위해 IF_REQUIRED로 설정
         http
