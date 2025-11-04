@@ -37,8 +37,10 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
+        Long userId = customUserDetails.getUserId();  // 추가
 
-        String token = jwtUtil.createJwt(username, role, 60*60*60L);
+
+        String token = jwtUtil.createJwt(username, role, userId,60*60*60L);
 
         System.out.println("JWT Token: " + token);
 

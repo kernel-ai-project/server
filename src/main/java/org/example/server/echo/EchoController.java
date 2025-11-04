@@ -29,6 +29,4 @@ public class EchoController {
         return echoService.echo(req);
     }
 
-
-
 }

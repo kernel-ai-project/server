@@ -81,6 +81,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             UserDTO userDTO = new UserDTO();
             userDTO.setUsername(username);
             userDTO.setName(oAuth2Response.getName());
+            userDTO.setUserId(savedUser.getUserId());
             userDTO.setRole("ROLE_USER");
 
             System.out.println("=== 신규 사용자 등록 완료 ===");
@@ -107,6 +108,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userDTO.setUsername(existData.getUsername());
             userDTO.setName(oAuth2Response.getName());
             userDTO.setRole(existData.getRole());
+            userDTO.setUserId(existData.getUserId());
 
             System.out.println("=== 기존 사용자 정보 업데이트 완료 ===");
             return new CustomOAuth2User(userDTO);
