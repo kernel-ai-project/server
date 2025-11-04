@@ -40,6 +40,8 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         String token = jwtUtil.createJwt(username, role, 60*60*60L);
 
+        System.out.println("JWT Token: " + token);
+
         response.addCookie(createCookie("Authorization", token));
         response.sendRedirect("http://localhost:5173/");
     }
