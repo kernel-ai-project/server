@@ -18,7 +18,7 @@ public class ChatRoomResponse {
     public static class GetChatRoomResponse {
         Long chatRoomId;
         String title;
-        boolean isFavorited;
+        Boolean isFavorited;
     }
 
 }
