@@ -2,6 +2,7 @@ package org.example.server.chat.service;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Optional;
 
 import jakarta.transaction.Transactional;
 import org.example.server.chat.dto.AskRequest;
@@ -16,6 +17,7 @@ import org.example.server.user.respository.UserRepository;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.MediaType;
+import org.springframework.scheduling.support.SimpleTriggerContext;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -29,6 +31,8 @@ public class ChatServiceImpl implements ChatService {
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final MessageRepository messageRepository;
+    private final ChatRedisService chatRedisService;
+
 
     @Override
     public Mono<AskResponse> ask(AskRequest req) {
@@ -66,16 +70,28 @@ public class ChatServiceImpl implements ChatService {
     //todo: 사용자 질문, 에이전트 답변 저장
     @Override
     @Transactional
-    public Map<String, Long> saveMessage(Long userId, String question, Long chatRoomId,Boolean is_user) {
+    public String saveMessage(Long userId, String message, Long chatRoomId, Boolean isUser) {
 
-        ChatRoom chatRoom = getOrCreateChatRoom(userId, question, chatRoomId);
-        Message savedMessage = saveMessage(chatRoom, question, is_user);
+//        //채팅방 조회 or 생성
+//        ChatRoom chatRoom = getOrCreateChatRoom(userId, message, chatRoomId);
+//
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
 
-        return Map.of(
-                "messageId", savedMessage.getMessageId(),
-                "chatRoomId", chatRoom.getChatRoomId()
-        );
+        //DB에 메시지 저장
+        Message savedMessage = saveMessage(chatRoom, message, isUser);
+
+        chatRedisService.saveMessage(chatRoom.getChatRoomId(), isUser, message);
+
+        return savedMessage.getContent();
     }
+
+
+
+
+
+
+    // === 내부 유틸 메서드 === //
 
 
     // 채팅방 조회 또는 생성

@@ -13,6 +13,6 @@ public interface ChatService {
 
     Flux<String> askStream(AskRequest req);
 
-    Map<String, Long> saveMessage(Long userId, String question, Long chatRoomId, Boolean is_user);
+    String saveMessage(Long userId, String question, Long chatRoomId, Boolean is_user);
 
 }
