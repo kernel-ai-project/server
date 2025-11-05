@@ -4,14 +4,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
 import org.example.server.chat.dto.AskRequest;
 import org.example.server.chat.dto.AskResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.server.chat.dto.ChatRoomDto;
 import org.example.server.chat.dto.ChatRoomResponse;
 import org.example.server.chat.entity.ChatRoom;
-import org.example.server.chat.respository.ChatRoomRepository;
+import org.example.server.chat.repository.ChatRoomRepository;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.MediaType;

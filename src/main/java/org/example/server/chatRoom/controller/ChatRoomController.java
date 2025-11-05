@@ -7,6 +7,7 @@ import org.example.server.chatRoom.dto.ChatRoomMessagesResponse;
 import org.example.server.chatRoom.dto.ChatRoomResponse;
 import org.example.server.chatRoom.dto.CreateChatRoomRequest;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
 @RestController
+@Component("teamChatRoomController")
 @RequestMapping("/api/chatRooms")
 @RequiredArgsConstructor
 public class ChatRoomController {

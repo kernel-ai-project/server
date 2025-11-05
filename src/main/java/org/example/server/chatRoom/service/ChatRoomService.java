@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.server.chat.ChatService;
 import org.example.server.chat.dto.AskRequest;
 import org.example.server.chat.dto.AskResponse;
-import org.example.server.chat.respository.ChatRoomRepository;
+import org.example.server.chat.repository.ChatRoomRepository;
 import org.example.server.chatRoom.AuthenticatedUserProvider;
 import org.example.server.chatRoom.dto.ChatMessageResponse;
 import org.example.server.chatRoom.dto.ChatRoomMessagesResponse;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
-@Service
+@Service("teamChatRoomService")
 @RequiredArgsConstructor
 public class ChatRoomService {
 

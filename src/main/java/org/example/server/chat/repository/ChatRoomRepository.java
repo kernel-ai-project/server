@@ -1,11 +1,8 @@
-package org.example.server.chat.respository;
+package org.example.server.chat.repository;
 
-import jakarta.persistence.LockModeType;
 import org.example.server.chat.dto.ChatRoomResponse;
 import org.example.server.chat.entity.ChatRoom;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Lock;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -13,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+@Repository("teamChatRoomRepository")
 public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
 
     @Query("SELECT cr.chatRoomId, cr.title, cr.isFavorited " +
