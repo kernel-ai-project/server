@@ -46,6 +46,9 @@ dependencies {
 
     implementation 'com.oracle.database.jdbc:ojdbc11:23.3.0.23.09'  // 최신 Oracle JDBC 드라이버
 
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+
 }
 
 tasks.named('test') {
