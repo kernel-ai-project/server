@@ -1,5 +1,6 @@
 package org.example.server.chat.controller;
 
+import org.example.server.chat.dto.AnswerRequest;
 import org.example.server.chat.dto.ChatResponse;
 import org.example.server.chat.service.ChatRedisService;
 import org.example.server.chat.service.ChatService;
@@ -28,10 +29,6 @@ public class ChatController {
         return chatService.ask(req);
     }
 
-    @PostMapping(value = "/ask/stream", produces = MediaType.TEXT_PLAIN_VALUE)
-    public Flux<String> askStream(@RequestBody AskRequest req) {
-        return chatService.askStream(req);
-    }
 
 
     //todo: 답변 저장 & 답변 반환
@@ -41,23 +38,13 @@ public class ChatController {
             @RequestBody AskRequest req) {
 
         Long userId = 6L;
-
-        //질문
         String question = req.question();
 
-        // 답변
-        String answer = chatService.askStream(req)
-                .collectList()  // Flux<String> → Mono<List<String>>
-                .map(chunks -> String.join("", chunks))  // List<String> → String (하나로 합치기)
-                .block();
+        // 질문 저장
+        chatService.saveQuestion(userId, question, chatRoomId, true);
 
-        //반환
-        String saveQuestion = chatService.saveMessage(userId, question, chatRoomId, true);
-        String saveAnswer = chatService.saveMessage(userId, answer, chatRoomId, false);
-
-        Flux<String> fluxAnswer = Flux.just(saveAnswer);
-
-        return fluxAnswer;
+        // 답변 생성 및 반환 (답변 저장은 서비스에서 처리)
+        return chatService.askStreamWithContext(userId, chatRoomId, question);
     }
 
     /**
@@ -65,7 +52,9 @@ public class ChatController {
      */
     @GetMapping("/chatRooms/{chatRoomId}/summary")
     public ResponseEntity<String> getChatSummary(@PathVariable Long chatRoomId) {
+        
         String summary = chatRedisService.getSummary(chatRoomId);
+        System.out.println("summary = " + summary);
         if (summary == null) {
             return ResponseEntity.ok("아직 요약이 생성되지 않았습니다.");
         }
