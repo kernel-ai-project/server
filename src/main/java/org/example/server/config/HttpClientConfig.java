@@ -22,11 +22,11 @@ public class HttpClientConfig {
     @Bean
     public WebClient fastapiClient(WebClient.Builder builder) {
         HttpClient http = HttpClient.create()
-                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
-                .responseTimeout(Duration.ofSeconds(10))
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 1000000)
+                .responseTimeout(Duration.ofSeconds(60))
                 .doOnConnected(conn -> {
-                    conn.addHandlerLast(new ReadTimeoutHandler(15, TimeUnit.SECONDS));
-                    conn.addHandlerLast(new WriteTimeoutHandler(15, TimeUnit.SECONDS));
+                    conn.addHandlerLast(new ReadTimeoutHandler(60, TimeUnit.SECONDS));
+                    conn.addHandlerLast(new WriteTimeoutHandler(60, TimeUnit.SECONDS));
                 });
 
         return builder
