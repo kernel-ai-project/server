@@ -3,6 +3,7 @@ package org.example.server.chat.respository;
 import jakarta.persistence.LockModeType;
 import org.example.server.chat.dto.ChatRoomResponse;
 import org.example.server.chat.entity.ChatRoom;
+import org.springframework.data.domain.Limit;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
@@ -28,5 +29,8 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
             "WHERE cr.user.userId = :userId AND cr.chatRoomId = :chatRoomId")
     Optional<ChatRoom> findByUserIdAndChatRoomId(@Param("userId") Long userId,
                                                 @Param("chatRoomId") Long chatRoomId);
+
+
+    ChatRoom findByChatRoomId(Long chatRoomId);
 
 }

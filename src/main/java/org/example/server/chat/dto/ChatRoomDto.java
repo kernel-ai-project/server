@@ -10,4 +10,5 @@ public class ChatRoomDto {
     private Long chatRoomId;
 
     private Boolean isFavorited;
+
 }

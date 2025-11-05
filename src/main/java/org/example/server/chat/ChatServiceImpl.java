@@ -2,16 +2,20 @@ package org.example.server.chat;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Map;
 
 import jakarta.transaction.Transactional;
-import lombok.extern.slf4j.Slf4j;
 import org.example.server.chat.dto.AskRequest;
 import org.example.server.chat.dto.AskResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.server.chat.dto.ChatRoomDto;
 import org.example.server.chat.dto.ChatRoomResponse;
 import org.example.server.chat.entity.ChatRoom;
+import org.example.server.chat.entity.Message;
+import org.example.server.chat.entity.User;
 import org.example.server.chat.respository.ChatRoomRepository;
+import org.example.server.chat.respository.UserRepository;
+import org.example.server.chatRoom.repository.MessageRepository;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.MediaType;
@@ -25,8 +29,9 @@ import reactor.core.publisher.Mono;
 public class ChatServiceImpl implements ChatService {
 
     private final WebClient fastapiClient;
-
+    private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
+    private final MessageRepository messageRepository;
 
     @Override
     public Mono<AskResponse> ask(AskRequest req) {
@@ -86,7 +91,7 @@ public class ChatServiceImpl implements ChatService {
 
         ChatRoom chatRoom = chatRoomRepository.findByUserIdAndChatRoomId(userId, chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다."));
-        if(!chatRoom.getIsFavorited()){
+        if (!chatRoom.getIsFavorited()) {
             chatRoom.addFavorite();
 
             return ChatRoomDto.builder()
@@ -98,4 +103,54 @@ public class ChatServiceImpl implements ChatService {
         }
 
     }
+
+    //todo: 사용자 질문, 에이전트 답변 저장
+    @Override
+    @Transactional
+    public Map<String, Long> saveMessage(Long userId, String question, Long chatRoomId,Boolean is_user) {
+
+        ChatRoom chatRoom = getOrCreateChatRoom(userId, question, chatRoomId);
+        Message savedMessage = saveMessage(chatRoom, question, is_user);
+
+        return Map.of(
+                "messageId", savedMessage.getMessageId(),
+                "chatRoomId", chatRoom.getChatRoomId()
+        );
+    }
+
+
+    // 채팅방 조회 또는 생성
+    private ChatRoom getOrCreateChatRoom(Long userId, String question, Long chatRoomId) {
+        if (chatRoomId == null) {
+            return createNewChatRoom(userId, question);
+        }
+
+        return chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("ChatRoom not found: " + chatRoomId));
+    }
+
+    // 새 채팅방 생성 및 저장
+    private ChatRoom createNewChatRoom(Long userId, String question) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("User not found: " + userId));
+
+        ChatRoom newChatRoom = ChatRoom.builder()
+                .user(user)
+                .title(question)
+                .build();
+
+        return chatRoomRepository.save(newChatRoom);
+    }
+
+    // 메시지 생성 및 저장
+    private Message saveMessage(ChatRoom chatRoom, String content, boolean isUser) {
+        Message message = Message.builder()
+                .chatRoom(chatRoom)
+                .content(content)
+                .isUser(isUser)
+                .build();
+
+        return messageRepository.save(message);
+    }
+
 }

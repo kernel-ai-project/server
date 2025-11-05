@@ -12,4 +12,7 @@ public class ChatRoomResponse {
     private String title;
 
     private Boolean isFavorited;
+
+
+
 }
