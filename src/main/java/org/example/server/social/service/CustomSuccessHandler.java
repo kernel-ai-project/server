@@ -40,7 +40,7 @@ public class CustomSuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
         Long userId = customUserDetails.getUserId();  // 추가
 
 
-        String token = jwtUtil.createJwt(username, role, userId,60*60*60L);
+        String token = jwtUtil.createJwt(username, role, userId,60*60*60*1000L);
 
         System.out.println("JWT Token: " + token);
 
