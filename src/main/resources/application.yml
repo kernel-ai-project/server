@@ -51,6 +51,8 @@ spring:
 
   jwt:
     secret: ${JWT_SECRET_KEY}
+    access-ttl: 7200000
+    refresh-ttl: 1209600000
 
 # 디버깅을 위한 로그 레벨 추가
 logging:
