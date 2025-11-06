@@ -10,7 +10,6 @@ public class ChatRoomResponse {
     public static class CreateChatRoomResponse {
         Long chatRoomId;
         String title;
-        String answer;
     }
 
     @Getter

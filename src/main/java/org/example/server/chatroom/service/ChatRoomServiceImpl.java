@@ -36,65 +36,27 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final ChatService chatService;
 
     @Override
-    public Mono<ChatRoomResponse.CreateChatRoomResponse> createChatRoom(CreateChatRoomRequest request) {
-        String question = request.question().trim();
+    public Mono<ChatRoomResponse.CreateChatRoomResponse> createChatRoom(Long userId, CreateChatRoomRequest request) {
 
-        Mono<User> ownerMono = authenticatedUserProvider.getCurrentUserId()
-                .flatMap(userId -> Mono.fromCallable(() -> loadOwner(userId))
-                        .subscribeOn(Schedulers.boundedElastic()));
+        return Mono.fromCallable(() -> {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new UserNotFoundException(userId));
+            String defaultTitle = request.question();
 
-        Mono<AskResponse> answerMono = chatService.ask(new AskRequest(question));
+            ChatRoom chatRoom = ChatRoom.builder()
+                    .user(user)
+                    .title(defaultTitle)
+                    .build();
 
-        return ownerMono
-                .zipWith(answerMono)
-                .flatMap(tuple -> Mono.fromCallable(() ->
-                                saveChatRoomAndBuildResponse(tuple.getT1(), question, tuple.getT2().answer()))
-                        .subscribeOn(Schedulers.boundedElastic()));
+            ChatRoom saved = chatRoomRepository.save(chatRoom);
+
+            return ChatRoomResponse.CreateChatRoomResponse.builder()
+                    .chatRoomId(saved.getChatRoomId())
+                    .title(saved.getTitle())
+                    .build();
+        }).subscribeOn(Schedulers.boundedElastic());
     }
 
-    private User loadOwner(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException(userId));
-    }
-
-    private ChatRoomResponse.CreateChatRoomResponse saveChatRoomAndBuildResponse(User owner, String question, String answer) {
-        LocalDateTime now = LocalDateTime.now();
-
-        ChatRoom chatRoom = ChatRoom.builder()
-                .user(owner)
-                .title(question)
-//                .createdAt(now)
-//                .updateAt(now)
-                .isDeleted(Boolean.FALSE)
-                .build();
-
-        ChatRoom saved = chatRoomRepository.save(chatRoom);
-        persistInitialMessages(saved, question, answer, now);
-
-        return ChatRoomResponse.CreateChatRoomResponse.builder()
-                .chatRoomId(saved.getChatRoomId())
-                .title(saved.getTitle())
-                .answer(answer)
-                .build();
-    }
-
-    private void persistInitialMessages(ChatRoom chatRoom, String question, String answer, LocalDateTime createdAt) {
-        Message questionMessage = Message.builder()
-                .chatRoom(chatRoom)
-                .isUser(true)
-                .content(question)
-//                .createdAt(createdAt)
-                .build();
-
-        Message answerMessage = Message.builder()
-                .chatRoom(chatRoom)
-                .isUser(false)
-                .content(answer)
-//                .createdAt(LocalDateTime.now())
-                .build();
-
-        messageRepository.saveAll(List.of(questionMessage, answerMessage));
-    }
 
     @Override
     public Mono<ChatRoomMessagesResponse> getChatMessages(Long chatRoomId) {
@@ -136,9 +98,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         );
     }
 
-    private OffsetDateTime toOffsetDateTime(LocalDateTime createdAt) {
-        return createdAt != null ? createdAt.atOffset(ZoneOffset.UTC) : null;
-    }
 
     @Override
     @Transactional

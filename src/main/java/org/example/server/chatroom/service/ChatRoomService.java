@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface ChatRoomService {
 
-    Mono<ChatRoomResponse.CreateChatRoomResponse> createChatRoom(CreateChatRoomRequest request);
+    Mono<ChatRoomResponse.CreateChatRoomResponse> createChatRoom(Long userId, CreateChatRoomRequest request);
 
     Mono<ChatRoomMessagesResponse> getChatMessages(Long chatRoomId);
 
