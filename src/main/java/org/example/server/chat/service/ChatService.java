@@ -1,6 +1,7 @@
 package org.example.server.chat.service;
 
 import jakarta.transaction.Transactional;
+import org.example.server.chat.dto.AnswerRequest;
 import org.example.server.chat.dto.AskRequest;
 import org.example.server.chat.dto.AskResponse;
 import reactor.core.publisher.Flux;
@@ -11,8 +12,9 @@ import java.util.Map;
 public interface ChatService {
     Mono<AskResponse> ask(AskRequest req);
 
-    Flux<String> askStream(AskRequest req);
+    Flux<String> askStream(AnswerRequest req);
 
-    Map<String, Long> saveMessage(Long userId, String question, Long chatRoomId, Boolean is_user);
+    void saveQuestion(Long userId, String question, Long chatRoomId, Boolean is_user);
 
+    Flux<String> askStreamWithContext(Long userId, Long chatRoomId, String question);
 }

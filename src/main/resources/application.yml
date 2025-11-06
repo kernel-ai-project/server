@@ -17,6 +17,15 @@ spring:
       ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
     show-sql: ${SPRING_JPA_SHOW_SQL}
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      timeout: 2000
+
+  main:
+    allow-bean-definition-overriding: true
+
   h2:
     console:
       enabled: ${SPRING_H2_CONSOLE_ENABLED}

@@ -1,12 +1,15 @@
 package org.example.server.chat.service;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.transaction.Transactional;
+import org.example.server.chat.dto.AnswerRequest;
 import org.example.server.chat.dto.AskRequest;
 import org.example.server.chat.dto.AskResponse;
 import lombok.RequiredArgsConstructor;
+import org.example.server.chat.dto.ChatMessage;
 import org.example.server.chat.entity.Message;
 import org.example.server.chatroom.entity.ChatRoom;
 import org.example.server.chatroom.repository.ChatRoomRepository;
@@ -29,6 +32,8 @@ public class ChatServiceImpl implements ChatService {
     private final UserRepository userRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final MessageRepository messageRepository;
+    private final ChatRedisService chatRedisService;
+
 
     @Override
     public Mono<AskResponse> ask(AskRequest req) {
@@ -38,11 +43,10 @@ public class ChatServiceImpl implements ChatService {
                 .bodyValue(req)
                 .retrieve()
                 .bodyToMono(AskResponse.class);
-
     }
 
     @Override
-    public Flux<String> askStream(AskRequest req) {
+    public Flux<String> askStream(AnswerRequest req) {
         return fastapiClient.post()
                 .uri("/ask/stream")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -51,32 +55,83 @@ public class ChatServiceImpl implements ChatService {
                 .retrieve()
                 .bodyToFlux(DataBuffer.class)
                 .map(this::toUtf8String)
-                .filter(chunk -> !chunk.isBlank());   // 필요시 버퍼링 로직 추가
+                .filter(chunk -> !chunk.isBlank());
     }
 
     private String toUtf8String(DataBuffer buffer) {
-        // --- 👈 이 부분을 추가해야 합니다.
         byte[] bytes = new byte[buffer.readableByteCount()];
         buffer.read(bytes);
         DataBufferUtils.release(buffer);
         return new String(bytes, StandardCharsets.UTF_8);
     }
 
-
-    //todo: 사용자 질문, 에이전트 답변 저장
-    @Override
     @Transactional
-    public Map<String, Long> saveMessage(Long userId, String question, Long chatRoomId,Boolean is_user) {
+    @Override
+    public void saveQuestion(Long userId, String message, Long chatRoomId, Boolean isUser) {
+        ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("채팅방을 찾을 수 없습니다."));
 
-        ChatRoom chatRoom = getOrCreateChatRoom(userId, question, chatRoomId);
-        Message savedMessage = saveMessage(chatRoom, question, is_user);
+        // DB에 메시지 저장
+        Message savedMessage = saveMessage(chatRoom, message, isUser);
 
-        return Map.of(
-                "messageId", savedMessage.getMessageId(),
-                "chatRoomId", chatRoom.getChatRoomId()
-        );
+        // Redis에 메시지 저장
+        chatRedisService.saveMessage(chatRoom.getChatRoomId(), isUser, message);
     }
 
+    @Override
+    public Flux<String> askStreamWithContext(Long userId, Long chatRoomId, String question) {
+        // 1. Redis에서 최근 대화 내역과 요약 가져오기
+        List<Object> redisHistory = chatRedisService.getRecentHistory(chatRoomId);
+        String summary = chatRedisService.getSummary(chatRoomId);
+
+        // 2. Redis 형식을 FastAPI 형식으로 변환
+        List<ChatMessage> history = convertToFastApiFormat(redisHistory);
+
+        // 3. history와 summary를 포함한 AnswerRequest 생성
+        AnswerRequest requestWithContext = new AnswerRequest(question, history, summary);
+
+        // 4. FastAPI로 전달하여 스트리밍 답변 받기
+        Flux<String> answerStream = askStream(requestWithContext);
+
+        // 5. 전체 답변을 모아서 저장
+        String fullAnswer = answerStream
+                .collectList()
+                .map(chunks -> String.join("", chunks))
+                .block();
+
+        // 6. 답변만 Redis에 저장 (질문은 Controller에서 이미 저장됨)
+        saveQuestion(userId, fullAnswer, chatRoomId, false);
+
+        // 7. 저장된 답변을 Flux로 반환
+        return Flux.just(fullAnswer);
+    }
+    /**
+     * Redis 형식을 FastAPI 형식으로 변환
+     */
+    private List<ChatMessage> convertToFastApiFormat(List<Object> redisHistory) {
+        if (redisHistory == null || redisHistory.isEmpty()) {
+            return new ArrayList<>();
+        }
+
+        List<ChatMessage> messages = new ArrayList<>();
+
+        for (Object obj : redisHistory) {
+            String message = obj.toString();
+
+            if (message.startsWith("user:")) {
+                messages.add(new ChatMessage("user", message.substring(5)));
+            } else if (message.startsWith("assistant:")) {
+                messages.add(new ChatMessage("assistant", message.substring(10)));
+            } else if (message.startsWith("bot:")) {
+                messages.add(new ChatMessage("assistant", message.substring(4)));
+            }
+        }
+
+        return messages;
+    }
+
+
+    // === 내부 유틸 메서드 === //
 
     // 채팅방 조회 또는 생성
     private ChatRoom getOrCreateChatRoom(Long userId, String question, Long chatRoomId) {
@@ -111,5 +166,4 @@ public class ChatServiceImpl implements ChatService {
 
         return messageRepository.save(message);
     }
-
 }
