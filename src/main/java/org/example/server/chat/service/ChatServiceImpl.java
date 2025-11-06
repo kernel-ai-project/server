@@ -1,6 +1,5 @@
 package org.example.server.chat.service;
 
-import java.awt.print.Pageable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -114,7 +113,7 @@ public class ChatServiceImpl implements ChatService {
     public List<ChatMessage.HistoryMessageDTO> findTop10ByChatRoomId(Long chatRoomId){
         PageRequest pageRequest = PageRequest.of(0, 10);
 
-        return messageRepository.findTop10ByChatRoomId(chatRoomId, (Pageable) pageRequest);
+        return messageRepository.findTop10ByChatRoomId(chatRoomId, pageRequest);
     }
     /**
      * Redis 형식을 FastAPI 형식으로 변환

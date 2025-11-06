@@ -2,6 +2,7 @@ package org.example.server.chatroom.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.example.server.chat.service.ChatRedisService;
 import org.example.server.chatroom.dto.*;
 import org.example.server.chatroom.dto.ChatRoomResponse;
 import org.example.server.chatroom.service.ChatRoomService;
@@ -20,7 +21,7 @@ import java.util.List;
 public class ChatRoomController {
 
     private final ChatRoomService chatRoomService;
-
+    private final ChatRedisService chatRedisService;
     @PostMapping
     public Mono<ResponseEntity<ChatRoomResponse.CreateChatRoomResponse>> create(@Valid @RequestBody CreateChatRoomRequest request,
                                                                                 @AuthenticationPrincipal CustomOAuth2User user) {
@@ -30,7 +31,8 @@ public class ChatRoomController {
 
     @GetMapping("/{chatRoomId}/messages")
     public Mono<ResponseEntity<ChatRoomMessagesResponse>> getMessages(@PathVariable Long chatRoomId) {
-        return chatRoomService.getChatMessages(chatRoomId)
+            chatRoomService.setChatRoomHistoryAndSummarization(chatRoomId);
+            return chatRoomService.getChatMessages(chatRoomId)
                 .map(ResponseEntity::ok);
     }
 

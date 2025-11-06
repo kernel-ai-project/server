@@ -19,7 +19,7 @@ public class WebConfig implements WebFluxConfigurer {
     }
 
     @Bean
-    public WebClient fastapiClient() {
+    public WebClient fastApiClient() {
         return WebClient.builder()
                 .baseUrl("http://localhost:8000")
                 .build();

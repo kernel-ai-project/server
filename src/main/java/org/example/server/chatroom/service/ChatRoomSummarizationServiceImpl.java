@@ -6,6 +6,8 @@ import org.example.server.chat.repository.ChatRoomSummarizationRepository;
 import org.springframework.stereotype.Repository;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @RequiredArgsConstructor
 public class ChatRoomSummarizationServiceImpl implements ChatRoomSummarizationService {
@@ -14,6 +16,6 @@ public class ChatRoomSummarizationServiceImpl implements ChatRoomSummarizationSe
 
     @Override
     public SummarizeResponse findSummarizationByChatRoomId(Long chatRoomId){
-        return chatRoomSummarizationRepository.findByChatRoomId(chatRoomId);
+        return chatRoomSummarizationRepository.findByChatRoomChatRoomId(chatRoomId);
     }
 }
