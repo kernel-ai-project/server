@@ -94,7 +94,7 @@ public class ChatRoomController {
     /**
      * 채팅방 제목 수정
      */
-    @PatchMapping("/{chatRoomId}/{userId}/title")
+    @PatchMapping("/{chatRoomId}/title")
     public ResponseEntity<ApiResponse<ChatRoomResponse.GetChatRoomTitle>> editChatRoomTitle(@AuthenticationPrincipal CustomOAuth2User user,
                                                                                             @PathVariable Long chatRoomId,
                                                                                             @RequestBody ChatRoomTitleRequest request) {
