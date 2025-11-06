@@ -15,6 +15,9 @@ public interface ChatRoomService {
 
     void deleteChatRoom(Long userId, Long chatRoomId);
 
-    ChatRoomDto updateFavorite(Long userId, Long chatRoomId, boolean isFavorited);
+    ChatRoomResponse.GetChatRoomFavorite updateFavorite(Long userId, Long chatRoomId, boolean isFavorited);
 
+    ChatRoomResponse.GetChatRoomTitle updateChatRoomTitle(Long userId, Long chatRoomId, String title);
+
+    String findGreeting(Long userId);
 }
