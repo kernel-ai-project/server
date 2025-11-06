@@ -59,6 +59,4 @@ public class User extends BaseTimeEntity {
     @Column(name = "role")
     private String role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<ChatRoomSummarization> chatRoomSummarization;
 }

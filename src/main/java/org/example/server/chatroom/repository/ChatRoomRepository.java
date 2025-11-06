@@ -26,4 +26,8 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, Long> {
             "WHERE cr.user.userId = :userId AND cr.chatRoomId = :chatRoomId")
     Optional<ChatRoom> findByUserIdAndChatRoomId(@Param("userId") Long userId,
                                                 @Param("chatRoomId") Long chatRoomId);
+
+
+
+
 }

@@ -11,4 +11,12 @@ import lombok.*;
 public class ChatMessage {
     private String role;
     private String content;
+
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Data
+    public static class HistoryMessageDTO{
+        private String content;
+        private Boolean isUser;
+    }
 }

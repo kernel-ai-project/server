@@ -2,6 +2,7 @@ package org.example.server.chatroom.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.server.common.BaseTimeEntity;
 import org.example.server.user.entity.User;
 
 @Entity
@@ -10,7 +11,7 @@ import org.example.server.user.entity.User;
 @AllArgsConstructor
 @Getter
 @Builder
-public class ChatRoomSummarization {
+public class ChatRoomSummarization extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "chatRoom_summarization_seq_gen")
@@ -21,8 +22,8 @@ public class ChatRoomSummarization {
     private Long chatRoomSummarizationId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "chat_room_id")
+    private ChatRoom chatRoom;
 
     private String summarizationContent;
 

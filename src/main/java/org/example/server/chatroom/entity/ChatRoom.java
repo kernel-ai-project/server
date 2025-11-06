@@ -49,6 +49,9 @@ public class ChatRoom extends BaseTimeEntity {
     @Column(name = "is_favorited", insertable = false, columnDefinition = "NUMBER(1)")
     private Boolean isFavorited;
 
+    @OneToMany(mappedBy = "chatRoom", cascade = CascadeType.ALL)
+    private List<ChatRoomSummarization> chatRoomSummarizationList;
+
     public void addFavorite() {
         if (this.isFavorited) {
             throw new IllegalStateException("이미 즐겨찾기된 채팅방입니다.");
