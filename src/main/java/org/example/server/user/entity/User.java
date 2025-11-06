@@ -3,6 +3,8 @@ package org.example.server.user.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+import org.example.server.chatroom.entity.ChatRoomSummarization;
+import org.example.server.chatroom.service.ChatRoomService;
 import org.example.server.common.BaseTimeEntity;
 import org.example.server.chatroom.entity.ChatRoom;
 
@@ -56,4 +58,7 @@ public class User extends BaseTimeEntity {
 
     @Column(name = "role")
     private String role;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<ChatRoomSummarization> chatRoomSummarization;
 }
