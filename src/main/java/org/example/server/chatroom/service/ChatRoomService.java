@@ -17,4 +17,5 @@ public interface ChatRoomService {
 
     ChatRoomDto updateFavorite(Long userId, Long chatRoomId, boolean isFavorited);
 
+    UpdateChatRoomTitleResponseDto updateChatRoomTitle(Long userId, Long chatRoomId, UpdateChatRoomTitleRequestDto requestDto);
 }

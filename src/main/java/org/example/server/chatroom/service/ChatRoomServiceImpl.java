@@ -4,15 +4,14 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.List;
+import java.util.Objects;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.example.server.chat.service.ChatService;
-import org.example.server.chat.dto.AskRequest;
-import org.example.server.chat.dto.AskResponse;
 import org.example.server.chatroom.dto.*;
 import org.example.server.chatroom.repository.ChatRoomRepository;
-import org.example.server.user.respository.UserRepository;
+import org.example.server.user.repository.UserRepository;
 import org.example.server.chatroom.AuthenticatedUserProvider;
 import org.example.server.chatroom.entity.ChatRoom;
 import org.example.server.chat.entity.Message;
@@ -125,11 +124,16 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         ChatRoom chatRoom = chatRoomRepository.findByUserIdAndChatRoomId(userId, chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다."));
 
-        if (!chatRoom.getIsFavorited() && isFavorited) {
+        if (!chatRoom.getIsFavorited() && isFavorited)
+        {
             chatRoom.addFavorite();
-        } else if (chatRoom.getIsFavorited() && !isFavorited) {
+        }
+        else if (chatRoom.getIsFavorited() && !isFavorited)
+        {
             chatRoom.removeFavorite();
-        } else {
+        }
+        else
+        {
             throw new IllegalStateException("이미 즐겨찾기 상태가 요청하신 상태와 동일합니다.");
         }
 
@@ -138,5 +142,31 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                 .isFavorited(chatRoom.getIsFavorited())
                 .build();
     }
+
+    @Transactional // 변경 감지를 위해 트랜잭션 활성화
+    public UpdateChatRoomTitleResponseDto updateChatRoomTitle(Long userId, Long chatRoomId, UpdateChatRoomTitleRequestDto requestDto)
+    {
+    ChatRoom chatRoom = chatRoomRepository.findById(chatRoomId)
+            .orElseThrow(() -> new ChatRoomNotFoundException(chatRoomId));
+
+    // 2. 채팅방 소유권 확인 (ChatRoom 엔티티가 User 정보를 가지고 있어야 함)
+    //    (ChatRoom 엔티티에 'private User user;' 필드가 있다고 가정)
+        if (!Objects.equals(chatRoom.getUser().getUserId(), userId))
+        {
+            // 로그인한 사용자와 채팅방 소유자가 다르면 ChatRoomAccessDeniedException 발생
+            throw new ChatRoomAccessDeniedException(chatRoomId);
+        }
+
+    // 3. 엔티티의 제목 변경 (엔티티에 추가한 updateTitle 메서드 사용)
+        chatRoom.updateTitle(requestDto.getTitle());
+
+    // 4. @Transactional 종료 시, 변경 감지(dirty checking)에 의해 UPDATE 쿼리 자동 실행
+
+    // 5. 응답 DTO 반환
+        return new UpdateChatRoomTitleResponseDto(
+            chatRoom.getChatRoomId(),
+                chatRoom.getTitle()
+        );
+}
 
 }

@@ -1,7 +1,7 @@
 package org.example.server.social.service;
 
 import org.example.server.user.entity.User;
-import org.example.server.user.respository.UserRepository;
+import org.example.server.user.repository.UserRepository;
 import org.example.server.social.dto.CustomOAuth2User;
 import org.example.server.social.dto.NaverResponse;
 import org.example.server.social.dto.OAuth2Response;
