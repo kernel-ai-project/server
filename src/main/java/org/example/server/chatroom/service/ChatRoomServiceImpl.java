@@ -202,8 +202,6 @@ public class ChatRoomServiceImpl implements ChatRoomService {
         User user = userRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
 
-        String greeting = user.getName() + "님 안녕하세요";
-
-        return greeting;
+        return user.getNickname() + "님 안녕하세요";
     }
 }
