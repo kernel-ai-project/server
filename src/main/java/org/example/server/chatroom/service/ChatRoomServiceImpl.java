@@ -125,8 +125,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
                         message.getMessageId(),
                         message.isUser(),
                         message.isUser() ? chatRoom.getUser().getUserId() : null,
-                        message.getContent(),
-                        toOffsetDateTime(message.getCreatedAt())
+                        message.getContent()
                 ))
                 .toList();
 

@@ -8,8 +8,6 @@ public record ChatMessageResponse(
         Long messageId,
         boolean isUser,
         Long userId,
-        String message,
-        @JsonProperty("created_time")
-        OffsetDateTime createdTime
+        String message
 ) {
 }
