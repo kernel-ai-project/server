@@ -10,4 +10,5 @@ import lombok.NoArgsConstructor;
 public class SummarizeResponse {
     private String summary;
     private int messageCount;
+
 }

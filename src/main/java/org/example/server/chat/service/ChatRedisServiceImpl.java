@@ -87,6 +87,44 @@ public class ChatRedisServiceImpl implements ChatRedisService {
         return redisTemplate.opsForList().range(key, 0, -1);
     }
 
+
+    //todo: 채팅방 열었을 때 최근 대화내역 조히
+    @Override
+    public void setChatHistoryOriginChatRoom(Long chatRoomId , List<ChatMessage.HistoryMessageDTO> historyMessageDTOList){
+        String key = CHAT_HISTORY_KEY + chatRoomId;
+
+        for(ChatMessage.HistoryMessageDTO message : historyMessageDTOList){
+            ListOperations<String,Object> listOps = redisTemplate.opsForList();
+
+            // user / bot 구분하여 저장
+            String formattedMessage = (message.getIsUser() ? "user:" : "assistant:") + message;
+
+            // 새로운 메시지 추가
+            listOps.rightPush(key, formattedMessage);
+
+        }
+    }
+
+    //todo: 채팅방 열었을 때 요약본 조회 후 세팅
+    @Override
+    public void setChatSummaryOriginChatRoom(Long chatRoomId, SummarizeResponse summary){
+        try {
+            String summaryKey = CHAT_SUMMARY_KEY + chatRoomId;
+
+            if (summary == null) {
+                log.warn("요약했던 내용이 없습니다.");
+            }else{
+                redisTemplate.opsForValue().set(
+                        summaryKey,
+                        summary.getSummary(),
+                        Duration.ofMinutes(TTL_MINUTES)
+                );
+            }
+        }catch (Exception e){
+            log.error("요약 불러오기 실패");
+        }
+    }
+
     /**
      * 채팅방별 메시지 카운터 증가
      */
@@ -144,6 +182,7 @@ public class ChatRedisServiceImpl implements ChatRedisService {
 
         return enoughMessages || timeElapsed;
     }
+
 
     /**
      * FastAPI를 호출하여 요약 생성 및 Redis 저장

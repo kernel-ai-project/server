@@ -1,5 +1,6 @@
 package org.example.server.chat.service;
 
+import java.awt.print.Pageable;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.example.server.user.entity.User;
 import org.example.server.user.respository.UserRepository;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -104,6 +106,15 @@ public class ChatServiceImpl implements ChatService {
 
         // 7. 저장된 답변을 Flux로 반환
         return Flux.just(fullAnswer);
+    }
+
+
+    //  최근 대화 10개 조회
+    @Override
+    public List<ChatMessage.HistoryMessageDTO> findTop10ByChatRoomId(Long chatRoomId){
+        PageRequest pageRequest = PageRequest.of(0, 10);
+
+        return messageRepository.findTop10ByChatRoomId(chatRoomId, (Pageable) pageRequest);
     }
     /**
      * Redis 형식을 FastAPI 형식으로 변환

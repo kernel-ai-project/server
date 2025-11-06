@@ -8,6 +8,8 @@ import java.util.Optional;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.example.server.chat.dto.ChatMessage;
+import org.example.server.chat.dto.SummarizeResponse;
 import org.example.server.chat.service.ChatRedisService;
 import org.example.server.chat.service.ChatService;
 import org.example.server.chat.dto.AskRequest;
@@ -37,6 +39,8 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     private final MessageRepository messageRepository;
     private final ChatService chatService;
     private final ChatRedisService chatRedisService;
+    private final ChatRoomSummarizationService chatRoomSummarizationService;
+
 
     @Override
     public Mono<ChatRoomResponse.CreateChatRoomResponse> createChatRoom(CreateChatRoomRequest request) {
@@ -122,18 +126,22 @@ public class ChatRoomServiceImpl implements ChatRoomService {
     @Override
     public void setChatRoomHistoryAndSummarization(Long chatRoomId){
         // 레디스에서 채팅 기록 혹은 요약 가져오기
-
-        boolean hasHistoryOrSummary =  hasHistoryOrSummary(chatRoomId);
+        String summary = chatRedisService.getSummary(chatRoomId);
+        Object history = chatRedisService.getRecentHistory(chatRoomId);
+        boolean hasHistoryOrSummary =  hasHistoryOrSummary(summary, history);
 
         if(!hasHistoryOrSummary){
-            
+            SummarizeResponse summarization = chatRoomSummarizationService.findSummarizationByChatRoomId(chatRoomId);
+            List<ChatMessage.HistoryMessageDTO> top10ByRecentChat = chatService.findTop10ByChatRoomId(chatRoomId);
+            chatRedisService.setChatHistoryOriginChatRoom(chatRoomId,top10ByRecentChat);
+            chatRedisService.setChatSummaryOriginChatRoom(chatRoomId, summarization);
+
         }
     }
 
-    private boolean hasHistoryOrSummary(Long chatRoomId) {
+    private boolean hasHistoryOrSummary(String summary, Object history) {
 
-        String summary = chatRedisService.getSummary(chatRoomId);
-        Object history = chatRedisService.getRecentHistory(chatRoomId);
+
 
         // 둘 중 하나라도 레디스에 존재한다면
         if(summary != null || history != null){
