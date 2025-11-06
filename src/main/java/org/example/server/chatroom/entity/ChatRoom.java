@@ -43,7 +43,7 @@ public class ChatRoom extends BaseTimeEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(name = "is_deleted", columnDefinition = "NUMBER(1)")
+    @Column(name = "is_deleted", insertable = false, columnDefinition = "NUMBER(1)")
     private Boolean isDeleted;
 
     @Column(name = "is_favorited", insertable = false, columnDefinition = "NUMBER(1)")

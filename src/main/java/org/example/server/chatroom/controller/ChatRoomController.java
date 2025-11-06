@@ -24,7 +24,8 @@ public class ChatRoomController {
     @PostMapping
     public Mono<ResponseEntity<ChatRoomResponse.CreateChatRoomResponse>> create(@Valid @RequestBody CreateChatRoomRequest request,
                                                                                 @AuthenticationPrincipal CustomOAuth2User user) {
-        return chatRoomService.createChatRoom(request)
+        Long userId = user.getUserId();
+        return chatRoomService.createChatRoom(userId, request)
                 .map(ResponseEntity::ok);
     }
 
