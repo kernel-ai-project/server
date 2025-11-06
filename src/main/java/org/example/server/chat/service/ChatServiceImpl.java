@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.transaction.Transactional;
+import java.util.concurrent.atomic.AtomicReference;
+import lombok.extern.slf4j.Slf4j;
 import org.example.server.chat.dto.AnswerRequest;
 import org.example.server.chat.dto.AskRequest;
 import org.example.server.chat.dto.AskResponse;
@@ -24,6 +26,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ChatServiceImpl implements ChatService {
@@ -93,17 +96,23 @@ public class ChatServiceImpl implements ChatService {
         // 4. FastAPI로 전달하여 스트리밍 답변 받기
         Flux<String> answerStream = askStream(requestWithContext);
 
-        // 5. 전체 답변을 모아서 저장
-        String fullAnswer = answerStream
-                .collectList()
-                .map(chunks -> String.join("", chunks))
-                .block();
+        // 5. 답변 조각을 누적하면서 스트리밍
+        AtomicReference<StringBuilder> fullAnswerBuilder = new AtomicReference<>(new StringBuilder());
 
-        // 6. 답변만 Redis에 저장 (질문은 Controller에서 이미 저장됨)
-        saveQuestion(userId, fullAnswer, chatRoomId, false);
-
-        // 7. 저장된 답변을 Flux로 반환
-        return Flux.just(fullAnswer);
+        return answerStream
+                .doOnNext(chunk -> {
+                    // 각 chunk를 누적
+                    fullAnswerBuilder.get().append(chunk);
+                })
+                .doOnComplete(() -> {
+                    // 스트리밍이 완료된 후에 전체 답변 저장
+                    String fullAnswer = fullAnswerBuilder.get().toString();
+                    saveQuestion(userId, fullAnswer, chatRoomId, false);
+                })
+                .doOnError(error -> {
+                    log.error("Error during streaming: ", error);
+                });
+        // 6. 원본 스트림을 그대로 반환 (클라이언트는 실시간으로 받음)
     }
     /**
      * Redis 형식을 FastAPI 형식으로 변환
