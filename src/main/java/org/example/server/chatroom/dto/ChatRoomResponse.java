@@ -15,9 +15,23 @@ public class ChatRoomResponse {
     @Getter
     @Builder
     public static class GetChatRoomResponse {
-        Long chatRoomId;
-        String title;
-        Boolean isFavorited;
+        private Long chatRoomId;
+        private String title;
+        private Boolean isFavorited;
+    }
+
+    @Getter
+    @Builder
+    public static class GetChatRoomTitle {
+        private Long chatRoomId;
+        private String title;
+    }
+
+    @Getter
+    @Builder
+    public static class GetChatRoomFavorite {
+        private Long chatRoomId;
+        private Boolean isFavorited;
     }
 
 }

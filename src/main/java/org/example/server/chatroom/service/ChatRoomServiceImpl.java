@@ -120,7 +120,7 @@ public class ChatRoomServiceImpl implements ChatRoomService {
 
     @Override
     @Transactional
-    public ChatRoomDto updateFavorite(Long userId, Long chatRoomId, boolean isFavorited) {
+    public ChatRoomResponse.GetChatRoomFavorite updateFavorite(Long userId, Long chatRoomId, boolean isFavorited) {
 
         ChatRoom chatRoom = chatRoomRepository.findByUserIdAndChatRoomId(userId, chatRoomId)
                 .orElseThrow(() -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다."));
@@ -133,10 +133,33 @@ public class ChatRoomServiceImpl implements ChatRoomService {
             throw new IllegalStateException("이미 즐겨찾기 상태가 요청하신 상태와 동일합니다.");
         }
 
-        return ChatRoomDto.builder()
+        return ChatRoomResponse.GetChatRoomFavorite.builder()
                 .chatRoomId(chatRoom.getChatRoomId())
                 .isFavorited(chatRoom.getIsFavorited())
                 .build();
     }
 
+    @Override
+    @Transactional
+    public ChatRoomResponse.GetChatRoomTitle updateChatRoomTitle(Long userId, Long chatRoomId, String title) {
+
+        ChatRoom chatRoom = chatRoomRepository.findByUserIdAndChatRoomId(userId, chatRoomId)
+                .orElseThrow(() -> new IllegalArgumentException("해당 채팅방이 존재하지 않습니다."));
+
+        chatRoom.editTitle(title);
+
+        return ChatRoomResponse.GetChatRoomTitle.builder()
+                .chatRoomId(chatRoom.getChatRoomId())
+                .title(chatRoom.getTitle())
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public String findGreeting(Long userId) {
+        User user = userRepository.findByUserId(userId)
+                .orElseThrow(() -> new IllegalArgumentException("사용자가 존재하지 않습니다."));
+
+        return user.getNickname() + "님 안녕하세요";
+    }
 }

@@ -2,6 +2,10 @@ package org.example.server.common;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.example.server.chatroom.dto.GreetingResponse;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 @Getter
 @Builder

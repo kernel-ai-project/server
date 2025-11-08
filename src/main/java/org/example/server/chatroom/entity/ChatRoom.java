@@ -64,4 +64,8 @@ public class ChatRoom extends BaseTimeEntity {
 
         this.isFavorited = false;
     }
+
+    public void editTitle(String newTitle) {
+        this.title = newTitle;
+    }
 }

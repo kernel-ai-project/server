@@ -57,18 +57,20 @@ public class ChatRoomController {
 
         chatRoomService.deleteChatRoom(userId, chatRoomId);
 
-        return ResponseEntity.ok().body(ApiResponse.success("채팅방이 삭제되었습니다."));
+        return ResponseEntity
+                .ok()
+                .body(ApiResponse.success("채팅방이 삭제되었습니다."));
     }
 
     /**
      * 채팅방 즐겨찾기 추가
      */
     @PatchMapping("/{chatRoomId}/favorite/enable")
-    public ResponseEntity<ApiResponse<ChatRoomDto>> addChatRoomFavorite(@AuthenticationPrincipal CustomOAuth2User user,
+    public ResponseEntity<ApiResponse<ChatRoomResponse.GetChatRoomFavorite>> addChatRoomFavorite(@AuthenticationPrincipal CustomOAuth2User user,
                                                                         @PathVariable Long chatRoomId) {
         Long userId = user.getUserId();
 
-        ChatRoomDto chatRoom = chatRoomService.updateFavorite(userId, chatRoomId, true);
+        ChatRoomResponse.GetChatRoomFavorite chatRoom = chatRoomService.updateFavorite(userId, chatRoomId, true);
 
         return ResponseEntity
                 .ok()
@@ -79,14 +81,31 @@ public class ChatRoomController {
      * 채팅방 즐겨찾기 해제
      */
     @PatchMapping("/{chatRoomId}/favorite/disable")
-    public ResponseEntity<ApiResponse<ChatRoomDto>> removeChatRoomFavorite(@AuthenticationPrincipal CustomOAuth2User user,
+    public ResponseEntity<ApiResponse<ChatRoomResponse.GetChatRoomFavorite>> removeChatRoomFavorite(@AuthenticationPrincipal CustomOAuth2User user,
                                                                            @PathVariable Long chatRoomId) {
         Long userId = user.getUserId();
 
-        ChatRoomDto chatRoom = chatRoomService.updateFavorite(userId, chatRoomId, false);
+        ChatRoomResponse.GetChatRoomFavorite chatRoom = chatRoomService.updateFavorite(userId, chatRoomId, false);
 
         return ResponseEntity
                 .ok()
                 .body(ApiResponse.success("성공적으로 즐겨찾기 해제를 완료했습니다.", chatRoom));
+    }
+
+    /**
+     * 채팅방 제목 수정
+     */
+    @PatchMapping("/{chatRoomId}/title")
+    public ResponseEntity<ApiResponse<ChatRoomResponse.GetChatRoomTitle>> editChatRoomTitle(@AuthenticationPrincipal CustomOAuth2User user,
+                                                                                            @PathVariable Long chatRoomId,
+                                                                                            @RequestBody ChatRoomTitleRequest request) {
+        Long userId = user.getUserId();
+
+        ChatRoomResponse.GetChatRoomTitle chatRoom = chatRoomService.updateChatRoomTitle(userId, chatRoomId, request.getTitle());
+
+        return ResponseEntity
+                .ok()
+                .body(ApiResponse.success("채팅방 이름이 성공적으로 수정되었습니다.",chatRoom));
+
     }
 }

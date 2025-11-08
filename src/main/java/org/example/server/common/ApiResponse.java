@@ -2,6 +2,7 @@ package org.example.server.common;
 
 import lombok.Builder;
 import lombok.Getter;
+import org.example.server.chatroom.dto.GreetingResponse;
 
 @Getter
 @Builder
