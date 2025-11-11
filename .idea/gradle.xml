@@ -10,7 +10,7 @@
         <option name="gradleJvm" value="21" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/../../../토이프로젝트4(ai_세금법률)/ai_project/server" />
           </set>
         </option>
       </GradleProjectSettings>

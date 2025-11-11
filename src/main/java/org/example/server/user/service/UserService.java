@@ -20,7 +20,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserNotFoundException(userId));
 
-        String greetingMessage = user.getUsername() + "님 안녕하세요";
+        String greetingMessage = user.getNickname() + "님 안녕하세요";
 
         // "message"가 없는 새로운 DTO를 반환
         return new GreetingResponseDto(greetingMessage);
