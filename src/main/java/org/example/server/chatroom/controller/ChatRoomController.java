@@ -89,4 +89,20 @@ public class ChatRoomController {
                 .ok()
                 .body(ApiResponse.success("성공적으로 즐겨찾기 해제를 완료했습니다.", chatRoom));
     }
+
+    @PatchMapping("/{chatRoomId}/title")
+    public ResponseEntity<ApiResponse<UpdateChatRoomTitleResponseDto>> updateChatRoomTitle(
+            @PathVariable Long chatRoomId,
+            @Valid @RequestBody UpdateChatRoomTitleRequestDto requestDto,
+            @AuthenticationPrincipal CustomOAuth2User user) { // 팀 인증 방식 적용
+
+        Long userId = user.getUserId(); // 실제 로그인한 사용자 ID 획득
+
+        UpdateChatRoomTitleResponseDto responseDto = chatRoomService.updateChatRoomTitle(userId, chatRoomId, requestDto);
+
+        // 팀의 ApiResponse 형식에 맞게 반환
+        return ResponseEntity
+                .ok()
+                .body(ApiResponse.success("채팅방 이름이 성공적으로 수정되었습니다.", responseDto));
+    }
 }

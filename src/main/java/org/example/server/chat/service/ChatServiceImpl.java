@@ -17,7 +17,7 @@ import org.example.server.chatroom.entity.ChatRoom;
 import org.example.server.chatroom.repository.ChatRoomRepository;
 import org.example.server.chatroom.repository.MessageRepository;
 import org.example.server.user.entity.User;
-import org.example.server.user.respository.UserRepository;
+import org.example.server.user.repository.UserRepository;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.MediaType;

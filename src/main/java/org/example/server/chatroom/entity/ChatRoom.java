@@ -57,6 +57,12 @@ public class ChatRoom extends BaseTimeEntity {
         this.isFavorited = true;
     }
 
+    public void updateTitle(String newTitle) {
+        this.title = newTitle;
+        // 필요시 updateAt 필드도 갱신
+        // this.updateAt = LocalDateTime.now();
+    }
+
     public void removeFavorite() {
         if (!this.isFavorited) {
             throw new IllegalStateException("즐겨찾기되지 않은 채팅방입니다.");
